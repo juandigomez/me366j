@@ -7,16 +7,20 @@ Created on Tue Nov 07 22:08:59 2017
 # =============================================================================
 # =============================================================================
 from motor import motor
+import time
 
 def piSetUp():
-    
-    GPIO.setmode(GPIO.BOARD)
 	
-	motorL = motor("left", [11, 13, 15])
+	import RPi.GPIO as GPIO
+	GPIO.setmode(GPIO.BOARD)
+	
+	motorL = motor("left", [29, 31])
+	motorR = motor("right", [33, 35]])
 	motorL.pinSetup()
-	motorL.setSpeed(3.3)
-	time.sleep(10)
-	motor.L.setSpeed(0)
+	motorR.pinSetup()
+	motorL.setVolt(5)
+	motorR.setVolt(2.5)
+	timer.sleep(10)
 	
 	GPIO.cleanup()
 	
@@ -31,3 +35,5 @@ def piSetUp():
     GPIO.setup(18, GPIO.OUT)    #motorB dir2 pin
     
 	"""
+if __name__== "__main__" :
+	piSetUp()
