@@ -3,10 +3,14 @@
 Created on Fri Nov 10 12:54:26 2017
 
 @author: Michael Personal
+
 """
+import RPi.GPIO as GPIO
+
 class motor:
     
 	def __init__(self, name, pins):
+                import RPi.GPIO as GPIO
 		self.name = name
 		self.pins = pins
 		self.speedPin = pins[0]	#define pin that determines speed
@@ -20,14 +24,13 @@ class motor:
 		self.my_pwm = GPIO.PWM(self.speedPin, 100)	#creates pwm object
 		self.my_pwm.start(0)	# sets speed value based on duty cycle
 
-        
 	def setVolt(self, speed):
 		self.voltNum = speed
-		self.baseValue = 5
+		self.baseValue = 58
 		self.duty = abs(100*self.voltNum/self.baseValue) #creates duty cycle based on input Voltage value
 		self.sendPower()
 	
-	def sendPower():
+	def sendPower(self):
 		if(self.voltNum != 0):
 			if(self.voltNum > 0):	#set direction
 				GPIO.output(self.dirPin1, True)

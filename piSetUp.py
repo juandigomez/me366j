@@ -7,33 +7,43 @@ Created on Tue Nov 07 22:08:59 2017
 # =============================================================================
 # =============================================================================
 from motor import motor
+from encoder import encoder
+from robot import robot
 import time
 
 def piSetUp():
 	
 	import RPi.GPIO as GPIO
 	GPIO.setmode(GPIO.BOARD)
-	
-	motorL = motor("left", [29, 31])
-	motorR = motor("right", [33, 35]])
-	motorL.pinSetup()
-	motorR.pinSetup()
-	motorL.setVolt(5)
-	motorR.setVolt(2.5)
-	timer.sleep(10)
-	
+
+	motorL = motor("left", [32, 31, 33])
+        encoderA = encoder("left", [26, 29], 50, motorL)
+        
+        motorR = motor("right", [35, 36, 37])
+        encoderB = encoder("left", [38, 40], 50, motorR)
+        
+        proxSensA=3
+        proxSensB=3
+        proxSensC=3
+        
+        rob = robot(motorL, motorR, encoderA, encoderB, proxSensA, proxSensB, proxSensC)
+        rob.pinSetup()
+        motorL.setVolt(50)
+        motorR.setVolt(50)
+	tnow = time.time()
+	while(time.time() < tnow +3):
+            rob.direct("forward", 50)
+        tnow = time.time()
+	while(time.time() < tnow +3):
+            rob.direct("backward", 50)
+        tnow = time.time()
+	while(time.time() < tnow +3):
+            rob.direct("left", 50)
+        tnow = time.time()
+	while(time.time() < tnow +3):
+            rob.direct("right", 50)
+            
 	GPIO.cleanup()
 	
-	
-	"""
-    GPIO.setup(11, GPIO.OUT)    #motorA speed pin
-    GPIO.setup(13, GPIO.OUT)    #motorA dir1 pin
-    GPIO.setup(15, GPIO.OUT)    #motorA dir2 pin
-    
-    GPIO.setup(12, GPIO.OUT)    #motorB speed pin
-    GPIO.setup(16, GPIO.OUT)    #motorB dir1 pin
-    GPIO.setup(18, GPIO.OUT)    #motorB dir2 pin
-    
-	"""
 if __name__== "__main__" :
 	piSetUp()
