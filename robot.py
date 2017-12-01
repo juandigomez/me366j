@@ -1,5 +1,6 @@
 from motor import motor
 from encoder import encoder
+from proximity import psensor
 import time
 
 class robot:
@@ -9,7 +10,7 @@ class robot:
         self.motorB = motorB
         self.encoderA = encoderA
         self.encoderB = encoderB
-#        self.proxSensA = proxSensA
+        self.proxSensA = proxSensA
 #        self.proxSensB = proxSensB
 #        self.proxSensC = proxSensC
     
@@ -18,6 +19,7 @@ class robot:
         self.motorB.pinSetup()
         self.encoderA.pinSetup()
         self.encoderB.pinSetup()
+        self.proxSensA.pinSetup()
         
     def direct(self, direction, RPM):
         if direction == "forward" :
@@ -32,6 +34,17 @@ class robot:
         elif direction == "right":
             self.encoderA.setSpeed(RPM)
             self.encoderB.setSpeed(-RPM)
+            
+    def obsDetect(self):
+        distance = self.proxSensA.measure()
+        print(distance)
+        
+    """def swerve(self):
+        obs = self.obsDetect()
+        print(obs)
+        if obs < 15:
+            self.direct("backward", 50)"""
+
     
     def runLoop(self):
         self.encoderA.RPMcalc()

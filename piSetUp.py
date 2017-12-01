@@ -9,7 +9,10 @@ Created on Tue Nov 07 22:08:59 2017
 from motor import motor
 from encoder import encoder
 from robot import robot
+from proximity import psensor
+import thermal_cam
 import time
+import sys
 
 def piSetUp():
 	
@@ -22,7 +25,7 @@ def piSetUp():
         motorR = motor("right", [35, 36, 37])
         encoderB = encoder("left", [38, 40], 50, motorR)
         
-        proxSensA=3
+        proxSensA= psensor("Front",[16,18])
         proxSensB=3
         proxSensC=3
         
@@ -33,17 +36,30 @@ def piSetUp():
 	tnow = time.time()
 	while(time.time() < tnow +3):
             rob.direct("forward", 50)
-        tnow = time.time()
-	while(time.time() < tnow +3):
-            rob.direct("backward", 50)
-        tnow = time.time()
-	while(time.time() < tnow +3):
-            rob.direct("left", 50)
-        tnow = time.time()
-	while(time.time() < tnow +3):
-            rob.direct("right", 50)
+            rob.runLoop()
+            rob.obsDetect()
+        print encoderA.counts
+        print encoderB.counts
+#        tnow = time.time()
+#	while(time.time() < tnow +3):
+#            rob.direct("backward", 50)
+            #rob.obsDetect()
+#        tnow = time.time()
+#	while(time.time() < tnow +3):
+#            rob.direct("left", 50)
+            #rob.obsDetect()
+#        tnow = time.time()
+#	while(time.time() < tnow +3):
+#            rob.direct("right", 50)
+            #rob.obsDetect()
             
-	GPIO.cleanup()
+	#GPIO.cleanup()
 	
 if __name__== "__main__" :
-	piSetUp()
+        import RPi.GPIO as GPIO
+	try:
+            piSetUp()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            GPIO.cleanup()

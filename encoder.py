@@ -13,6 +13,7 @@ class encoder:
 		self.start = [False, False]
 		self.asgnSpeed = asgnSpeed
 		self.RPM = 0
+		self.counts =[]
 	
 	def pinSetup(self):
 		GPIO.setup(self.clk, GPIO.IN)
@@ -59,4 +60,5 @@ class encoder:
                     self.mot.setVolt(min(self.speedInc/2 + self.mot.voltNum , self.mot.baseValue))
                 else:
                     self.mot.setVolt(max(self.speedInc/2 + self.mot.voltNum, -self.mot.baseValue))
+                self.counts.append(self.count)
 #                print(self.count)
