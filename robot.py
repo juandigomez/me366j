@@ -11,8 +11,8 @@ class robot:
         self.encoderA = encoderA
         self.encoderB = encoderB
         self.proxSensA = proxSensA
-#        self.proxSensB = proxSensB
-#        self.proxSensC = proxSensC
+        self.proxSensB = proxSensB
+        self.proxSensC = proxSensC
     
     def pinSetup(self):
         self.motorA.pinSetup()
@@ -20,6 +20,8 @@ class robot:
         self.encoderA.pinSetup()
         self.encoderB.pinSetup()
         self.proxSensA.pinSetup()
+        self.proxSensB.pinSetup()
+        self.proxSensC.pinSetup()
         
     def direct(self, direction, RPM):
         if direction == "forward" :
@@ -36,14 +38,9 @@ class robot:
             self.encoderB.setSpeed(-RPM)
             
     def obsDetect(self):
-        distance = self.proxSensA.measure()
-        print(distance)
-        
-    """def swerve(self):
-        obs = self.obsDetect()
-        print(obs)
-        if obs < 15:
-            self.direct("backward", 50)"""
+        self.distanceA = self.proxSensA.measure()
+        self.distanceB = self.proxSensB.measure()
+        self.distanceC = self.proxSensC.measure()
 
     
     def runLoop(self):
