@@ -23,7 +23,7 @@ class psensor:
 		
 		
 	def measure(self):
-			if (!self.triggered)
+	    if (self.triggered == False):
 				GPIO.output(self.trigger, True)
 				time.sleep(0.00001)
 				GPIO.output(self.trigger, False)
@@ -34,13 +34,14 @@ class psensor:
 					self.wasON = False
 					self.start = time.time()
 					elapsed = self.start - self.stop
-					distance = elapsed*34300/2
+					distance = 121#elapsed*34300/2
 					self.triggered = False
 					return distance
 				self.wasON = False
+			
 
             if GPIO.input(self.echo)==1:
-                if !self.wasON:
+                if self.wasON == False:
 					self.wasON = True
 					self.stop = time.time()
 		

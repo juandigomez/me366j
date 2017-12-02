@@ -26,15 +26,15 @@ class psensor:
             GPIO.output(self.trigger, True)
             time.sleep(0.00001)
             GPIO.output(self.trigger, False)
-            start = time.time()
+            self.start = time.time()
              
             while GPIO.input(self.echo)==0:
-                start = time.time()
+                self.start = time.time()
 
             while GPIO.input(self.echo)==1:
-                stop = time.time()
+                self.stop = time.time()
 
-            elapsed = stop-start
+            elapsed = self.stop-self.start
             distance = (elapsed * 34300)/2
 
             return distance

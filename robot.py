@@ -36,11 +36,15 @@ class robot:
         elif direction == "right":
             self.encoderA.setSpeed(RPM)
             self.encoderB.setSpeed(-RPM)
+        elif direction == "brake":
+            self.encoderA.setSpeed(RPM)
+            self.encoderB.setSpeed(-RPM)
             
     def obsDetect(self):
         self.distanceA = self.proxSensA.measure()
-        self.distanceB = self.proxSensB.measure()
-        self.distanceC = self.proxSensC.measure()
+        #self.distanceB = self.proxSensB.measure()
+        #self.distanceC = self.proxSensC.measure()
+        
 
     
     def runLoop(self):
