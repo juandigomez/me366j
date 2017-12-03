@@ -24,7 +24,7 @@ class motor:
 		self.my_pwm = GPIO.PWM(self.speedPin, 100)	#creates pwm object
 		self.my_pwm.start(0)	# sets speed value based on duty cycle
 
-	def setVolt(self, speed):
+	def setSpeed(self, speed):
 		self.voltNum = speed
 		self.baseValue = 58
 		self.duty = abs(100*self.voltNum/self.baseValue) #creates duty cycle based on input Voltage value
