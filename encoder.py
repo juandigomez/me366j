@@ -10,7 +10,7 @@ class encoder:
 		self.clk = pins[0]	#encoder pin1
 		self.dt = pins[1]	#encoder pin2
 		self.count = 0		#number of counts on encoder
-		self.start = [False, False]
+		self.start = [False, False, False]
 		self.asgnSpeed = asgnSpeed
 		self.RPM = 0
 		self.counts =[]
@@ -21,7 +21,7 @@ class encoder:
 		
 	def setSpeed(self, speed):
                 self.asgnSpeed = speed
-                self.mot.setVolt(speed)
+                self.mot.setSpeed(speed)
 	
 	def increment(self):
 		if (self.start[0] == False):	#initializes clkLastState
@@ -53,12 +53,25 @@ class encoder:
 			self.RPM = (self.count - self.countRef)*60/countsPerRev/(time.time() - self.tnow)
 			self.start[1] = False
 			self.regulateSpeed()
-			
+	
+	def turn(self, pulses):
+		if self.start[2] == False:
+			self.countRef = self.count
+			self.start[1] == True:
+		if self.countRef + pulses > self.count :
+			self.RPMcalc()
+			return True
+		else:
+			self.setSpeed(0)
+			self.start[2] = True
+			return False
+		
+	
 	def regulateSpeed(self):
 		self.speedInc = self.asgnSpeed - self.RPM
 		if(self.mot.voltNum + self.speedInc > 0):
-                    self.mot.setVolt(min(self.speedInc/2 + self.mot.voltNum , self.mot.baseValue))
+                    self.mot.setSpeed(min(self.speedInc/2 + self.mot.voltNum , self.mot.baseValue))
                 else:
-                    self.mot.setVolt(max(self.speedInc/2 + self.mot.voltNum, -self.mot.baseValue))
+                    self.mot.setSpeed(max(self.speedInc/2 + self.mot.voltNum, -self.mot.baseValue))
                 self.counts.append(self.count)
 #                print(self.count)

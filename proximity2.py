@@ -23,21 +23,27 @@ class psensor:
 		
 		
 	def measure(self):
-            GPIO.output(self.trigger, True)
-            time.sleep(0.00001)
-            GPIO.output(self.trigger, False)
-            self.start = time.time()
-             
-            while GPIO.input(self.echo)==0:
-                self.start = time.time()
+	    if (self.triggered == False):
+				GPIO.output(self.trigger, True)
+				time.sleep(0.00001)
+				GPIO.output(self.trigger, False)
+				self.triggered = True
+					             
+            if GPIO.input(self.echo)==0:
+				if self.wasON:
+					self.wasON = False
+					self.start = time.time()
+					elapsed = self.start - self.stop
+					distance = 121#elapsed*34300/2
+					self.triggered = False
+					return distance
+				self.wasON = False
+			
 
-            while GPIO.input(self.echo)==1:
-                self.stop = time.time()
-
-            elapsed = self.stop-self.start
-            distance = (elapsed * 34300)/2
-
-            return distance
+            if GPIO.input(self.echo)==1:
+                if self.wasON == False:
+					self.wasON = True
+					self.stop = time.time()
 		
 	def measure_average(self):
 		distance1=self.measure()
