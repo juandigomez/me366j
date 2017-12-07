@@ -10,15 +10,9 @@ from motor import motor
 from encoder import encoder
 from robot import robot
 from proximity import psensor
-from Adafruit_AMG88xx import Adafruit_AMG88xx
-from scipy.interpolate import griddata
-from colour import Color
 from TIC import TIC
 import time
 import sys
-import pygame
-import math
-import numpy as np
 
 def piSetUp():
         
@@ -40,10 +34,23 @@ def piSetUp():
         
         rob = robot(motorL, motorR, encoderA, encoderB, proxSensA, proxSensB, proxSensC)
         rob.pinSetup()
-	tnow = time.time()
-	"""time.time() < tnow +3"""
         
+        while(1):
+        #tnow = time.time()
+        #while(tnow > time.time() -1):
+        #    rob.direct("right", 50)
+            rob.obsDetect()
+            print(rob.distanceC)
+            TIC1.cam()
+
+	
+	
+	
+	"""time.time() < tnow +3"""
+        """
 	while(1):
+            
+            
             n=0
             rob.obsDetect()
             done = False
@@ -55,7 +62,7 @@ def piSetUp():
             else:
                 print(rob.distanceA)
                 rob.direct("forward", 50)
-            """rob.direct("forward", 50)
+            rob.direct("forward", 50)
             rob.runLoop()
             proxSensA.measure()
             rob.obsDetect()
@@ -63,9 +70,9 @@ def piSetUp():
             if rob.distanceA < 15:
                 while n < 50000:
                     rob.direct("backward", 50)
-                    n+=1"""
+                    n+=1
             TIC1.cam()
-            
+            """
 
 #        tnow = time.time()
 #	while(time.time() < tnow +3):

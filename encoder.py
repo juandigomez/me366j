@@ -56,16 +56,13 @@ class encoder:
 	
 	def turn(self, pulses):
 		if self.start[2] == False:
-			self.countRef = self.count
-			self.start[1] == True:
-		if self.countRef + pulses > self.count :
+			self.turnRef = self.count
+			self.start[2] = True
+		if abs(self.turnRef + pulses) > abs(self.count) :
 			self.RPMcalc()
-			return True
 		else:
 			self.setSpeed(0)
-			self.start[2] = True
-			return False
-		
+			self.start[2] = False		
 	
 	def regulateSpeed(self):
 		self.speedInc = self.asgnSpeed - self.RPM

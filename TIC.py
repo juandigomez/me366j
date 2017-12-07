@@ -11,10 +11,10 @@ class TIC:
     
     def TICstart(self):
         #low range of the sensor (this will be blue on the screen)
-        self.MINTEMP = 20
+        self.MINTEMP = 26
 
         #high range of the sensor (this will be red on the screen)
-        self.MAXTEMP = 30
+        self.MAXTEMP = 32
 
         #how many color values we can have
         self.COLORDEPTH = 1024
