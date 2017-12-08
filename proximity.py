@@ -4,13 +4,14 @@ import RPi.GPIO as GPIO
 
 class psensor:
     
-	def __init__(self, name, pins):
+	def __init__(self, name, pins, threshold):
 		self.name = name
 		self.pins = pins
 		self.trigger = self.pins[0]#define 1st pin that determines direction
 		self.echo = self.pins[1]	#define 2nd pin that determines direction
 		self.wasON = False
 		self.triggered = False
+		self.threshold =threshold
     
 		
 	def pinSetup(self):

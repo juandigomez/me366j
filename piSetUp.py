@@ -6,17 +6,9 @@ Created on Tue Nov 07 22:08:59 2017
 """
 # =============================================================================
 # =============================================================================
-from motor import motor
-from encoder import encoder
-from robot import robot
-from proximity import psensor
-from TIC import TIC
-import time
-import sys
 
 def piSetUp():
-        
-	import RPi.GPIO as GPIO
+
 	GPIO.setmode(GPIO.BOARD)
 	
 	TIC1 = TIC()
@@ -28,69 +20,43 @@ def piSetUp():
         motorR = motor("right", [35, 36, 37])
         encoderB = encoder("left", [38, 40], 50, motorR)
         
-        proxSensA= psensor("Front",[16,18])
-        proxSensB= psensor("Left",[12,22])
-        proxSensC= psensor("Right",[7,13])
+        proxSensA= psensor("Front",[16,18], 50)
+        proxSensB= psensor("Left",[12,22], 35)
+        proxSensC= psensor("Right",[7,13], 35)
         
         rob = robot(motorL, motorR, encoderA, encoderB, proxSensA, proxSensB, proxSensC)
         rob.pinSetup()
         
-        while(1):
-        #tnow = time.time()
-        #while(tnow > time.time() -1):
-        #    rob.direct("right", 50)
-            rob.obsDetect()
-            print(rob.distanceC)
-            TIC1.cam()
-
-	
-	
-	
-	"""time.time() < tnow +3"""
-        """
-	while(1):
+        
+        rob.direct("forward", 50)
+        tnow = time.time()
+        while(tnow + 60 > time.time()):
+            dirstate = rob.lastDir
+            countstate = rob.dirCount
+            rob.checkNear()
+            if (dirstate != rob.lastDir or countstate != rob.dirCount):
+                ctime = time.time()
+                while(ctime > time.time() + 1):
+                    rob.checkNear()
+                    rob.direct("forward", 50)
+                rob.direct(rob.lastDir, 50)
+                rob.dirCount = 2
             
-            
-            n=0
-            rob.obsDetect()
-            done = False
-            if rob.distanceA < 50:
-                while rob.distanceA < 50:
-                    rob.obsDetect()
-                    rob.direct("backward", 50)
-                    n+=1
-            else:
-                print(rob.distanceA)
-                rob.direct("forward", 50)
+                
             rob.direct("forward", 50)
-            rob.runLoop()
-            proxSensA.measure()
-            rob.obsDetect()
-            print(rob.distanceA)
-            if rob.distanceA < 15:
-                while n < 50000:
-                    rob.direct("backward", 50)
-                    n+=1
-            TIC1.cam()
-            """
-
-#        tnow = time.time()
-#	while(time.time() < tnow +3):
-#            rob.direct("backward", 50)
-            #rob.obsDetect()
-#        tnow = time.time()
-#	while(time.time() < tnow +3):
-#            rob.direct("left", 50)
-            #rob.obsDetect()
-#        tnow = time.time()
-#	while(time.time() < tnow +3):
-#            rob.direct("right", 50)
-            #rob.obsDetect()
             
-	#GPIO.cleanup()
-	
+
 if __name__== "__main__" :
+        from motor import motor
+        from encoder import encoder
+        from robot import robot
+        from proximity import psensor
+        from TIC import TIC
+        import time
+        import pygame
+        import sys
         import RPi.GPIO as GPIO
+        #from thread import start_new_thread
 	try:
             piSetUp()
         except KeyboardInterrupt:

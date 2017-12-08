@@ -3,6 +3,7 @@ from scipy.interpolate import griddata
 from colour import Color
 import pygame
 import os
+import sys
 import math
 import numpy as np
 import time
@@ -11,7 +12,7 @@ class TIC:
     
     def TICstart(self):
         #low range of the sensor (this will be blue on the screen)
-        self.MINTEMP = 26
+        self.MINTEMP = 23
 
         #high range of the sensor (this will be red on the screen)
         self.MAXTEMP = 32
@@ -74,7 +75,9 @@ class TIC:
             for ix, row in enumerate(bicubic):
                     for jx, pixel in enumerate(row):
                             pygame.draw.rect(self.lcd, self.colors[self.constrain(int(pixel), 0, self.COLORDEPTH- 1)], (self.displayPixelHeight * ix, self.displayPixelWidth * jx, self.displayPixelHeight, self.displayPixelWidth))
-            
+            for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			sys.exit()
             pygame.display.update()
 
 

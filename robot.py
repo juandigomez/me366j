@@ -2,6 +2,7 @@ from motor import motor
 from encoder import encoder
 from proximity import psensor
 import time
+from thread import start_new_thread
 
 class robot:
     
@@ -15,6 +16,8 @@ class robot:
         self.proxSensC = proxSensC
 	self.whlLen = 365.8
 	self.diam = 4*25.4
+	self.lastDir = "left"
+	self.dirCount = 0
     
     def pinSetup(self):
         self.motorA.pinSetup()
@@ -24,7 +27,21 @@ class robot:
         self.proxSensA.pinSetup()
         self.proxSensB.pinSetup()
         self.proxSensC.pinSetup()
+    
+    def runThread(self):
+        dirstate = rob.lastDir
+        countstate = rob.dirCount
+        self.checkNear()
+        if (dirstate != self.lastDir or countstate != self.dirCount):
+            ctime = time.time()
+            while(ctime > time.time() + 1):
+                self.checkNear()
+                self.direct("forward", 50)
+            self.direct(rob.lastDir, 50)
         
+            
+        self.direct("forward", 50)
+       
     def direct(self, direction, RPM):
         if direction == "forward" :
             self.motorA.setSpeed(RPM)
@@ -48,22 +65,64 @@ class robot:
         if direction == "right":
             self.encoderA.setSpeed(RPM)
             self.encoderB.setSpeed(RPM)
+            self.dirCount += 1
+            self.lastDir = "right"
             while (self.motorA.voltNum != 0 and self.motorB.voltNum != 0):
                 self.encoderA.turn(180*self.whlLen /4/self.diam)
                 self.encoderB.turn(180*self.whlLen /4/self.diam)
-        else:
+        elif direction == "left":
             self.encoderA.setSpeed(-RPM)
             self.encoderB.setSpeed(-RPM)
+            self.dirCount += 1
+            self.lastDir = "left"
             while (self.motorA.voltNum != 0 and self.motorB.voltNum != 0):
                 self.encoderA.turn(-180*self.whlLen /4/self.diam)
                 self.encoderB.turn(-180*self.whlLen /4/self.diam)
-        self.encoderA.setSpeed(0)
-        self.encoderB.setSpeed(0)
-			
-    def near(self, prox):
-            threshold = 20
-            if (self.proxSensA.measure < threshold):
-                    self.direct(0, "stop")
+        self.direct("stop", 0)
+        self.direct("stop", 0)
+    
+    def traverse(self):
+        dirstate = self.lastDir
+        countstate = self.lastDir
+        self.checkNear()
+        
+    
+    def checkNear(self):
+        if(self.near()):
+            if (self.lastDir == "left"):
+                if self.dirCount < 2 :
+                    self.direct("left", 50)
+                    if self.near():
+                        self.direct("right", 50)
+                        self.direct("right", 50)
+                        self.dirCount = 1
+                else:
+                    self.dirCount = 0
+                    self.direct("right", 50)
+                    if self.near():
+                        self.direct("left", 50)
+                        self.direct("left", 50)
+                        self.dirCount = 1
+            
+            else:
+                if self.dirCount < 2 :
+                    self.direct("right", 50)
+                    if self.near():
+                        self.direct("left", 50)
+                        self.direct("left", 50)
+                        self.dirCount = 1
+                else:
+                    self.dirCount = 0
+                    self.direct("left", 50)
+                    if self.near():
+                        self.direct("right", 50)
+                        self.direct("right", 50)
+                        self.dirCount = 1
+         			
+    def near(self):
+            self.obsDetect()
+            if (self.distanceA < self.proxSensA.threshold or self.distanceB < self.proxSensB.threshold or self.distanceC < self.proxSensC.threshold ):
+                    self.direct("stop", 0)
                     return True
             else:
                     return False
