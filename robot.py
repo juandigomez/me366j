@@ -2,11 +2,13 @@ from motor import motor
 from encoder import encoder
 from proximity import psensor
 import time
-from thread import start_new_thread
+#import threading
+from multiprocessing import Process
 
 class robot:
     
     def __init__(self, motorA, motorB, encoderA, encoderB, proxSensA, proxSensB, proxSensC):
+        #threading.Thread.__init__(self)
         self.motorA = motorA
         self.motorB = motorB
         self.encoderA = encoderA
@@ -18,6 +20,7 @@ class robot:
 	self.diam = 4*25.4
 	self.lastDir = "left"
 	self.dirCount = 0
+	self.frontCheck = False
     
     def pinSetup(self):
         self.motorA.pinSetup()
@@ -28,56 +31,80 @@ class robot:
         self.proxSensB.pinSetup()
         self.proxSensC.pinSetup()
     
-    def runThread(self):
-        dirstate = rob.lastDir
-        countstate = rob.dirCount
-        self.checkNear()
-        if (dirstate != self.lastDir or countstate != self.dirCount):
-            ctime = time.time()
-            while(ctime > time.time() + 1):
-                self.checkNear()
-                self.direct("forward", 50)
-            self.direct(rob.lastDir, 50)
+    def run(self):
+        self.autonomous()
+    
+    def autonomous(self):
+        #while(1):
+            dirstate = self.lastDir
+            countstate = self.dirCount
+            self.checkNear()
+            #if (dirstate != self.lastDir or countstate != self.dirCount):
+             #   ctime = time.time()
+              #  while(ctime > time.time() + 1):
+               #     self.checkNear()
+                #    self.direct("forward", 50)
+                #self.direct(self.lastDir, 50)
         
-            
-        self.direct("forward", 50)
+        
+            self.direct("forward", 50)
        
     def direct(self, direction, RPM):
         if direction == "forward" :
-            self.motorA.setSpeed(RPM)
-            self.motorB.setSpeed(-RPM)
-        elif direction == "backward" :
             self.motorA.setSpeed(-RPM)
             self.motorB.setSpeed(RPM)
-        elif direction == "left":
+        elif direction == "backward" :
+            self.motorA.setSpeed(RPM)
             self.motorA.setSpeed(-RPM)
-            self.motorB.setSpeed(-RPM)
+            self.turn(direction, RPM)
+            """if self.frontCheck == False:
+                    self.frontCheck = True
+                    self.tRef = time.time()
+            if (self.tRef + 0.75 > time.time()):
+                    self.motorA.setSpeed(RPM)
+                    self.motorB.setSpeed(-RPM)                    
+            else:
+                    self.direct("stop" , 0)
+                    self.frontCheck = False
+            """
+        elif direction == "left":
+            self.motorA.setSpeed(RPM)
+            self.motorB.setSpeed(RPM)
 	    self.turn(direction, RPM)
         elif direction == "right":
-            self.motorA.setSpeed(RPM)
-            self.motorB.setSpeed(RPM)
+            self.motorA.setSpeed(-RPM)
+            self.motorB.setSpeed(-RPM)
 	    self.turn(direction, RPM)
 	elif direction == "stop":
             self.motorA.setSpeed(0)
             self.motorB.setSpeed(0)
 	
     def turn(self, direction, RPM):
+        tStep = 1.5
+        if direction == "backward":
+            self.encoderA.setSpeed(RPM)
+            self.encoderB.setSpeed(-RPM)
+            self.dirCount += 1
+            self.lastDir = "right"
+            while (self.motorA.voltNum != 0 and self.motorB.voltNum != 0):
+                self.encoderA.turn(tStep)#180*self.whlLen /4/self.diam)
+                self.encoderB.turn(tStep) 
         if direction == "right":
             self.encoderA.setSpeed(RPM)
             self.encoderB.setSpeed(RPM)
             self.dirCount += 1
             self.lastDir = "right"
             while (self.motorA.voltNum != 0 and self.motorB.voltNum != 0):
-                self.encoderA.turn(180*self.whlLen /4/self.diam)
-                self.encoderB.turn(180*self.whlLen /4/self.diam)
+                self.encoderA.turn(tStep)#180*self.whlLen /4/self.diam)
+                self.encoderB.turn(tStep) #180*self.whlLen /4/self.diam)
         elif direction == "left":
             self.encoderA.setSpeed(-RPM)
             self.encoderB.setSpeed(-RPM)
             self.dirCount += 1
             self.lastDir = "left"
             while (self.motorA.voltNum != 0 and self.motorB.voltNum != 0):
-                self.encoderA.turn(-180*self.whlLen /4/self.diam)
-                self.encoderB.turn(-180*self.whlLen /4/self.diam)
+                self.encoderA.turn(tStep) #-180*self.whlLen /4/self.diam)
+                self.encoderB.turn(tStep) #-180*self.whlLen /4/self.diam)
         self.direct("stop", 0)
         self.direct("stop", 0)
     
@@ -89,6 +116,17 @@ class robot:
     
     def checkNear(self):
         if(self.near()):
+            if self.distanceA < self.proxSensA.threshold:
+                self.direct("backward", 50)
+                """if self.frontCheck == False:
+                    self.frontCheck = True
+                    self.tRef = time.time()
+                if (self.tRef + 0.75 > time.time()):
+                    self.direct("backward", 50)
+                else:
+                    self.direct("stop" , 0)
+                    self.frontCheck = False
+                """
             if (self.lastDir == "left"):
                 if self.dirCount < 2 :
                     self.direct("left", 50)
@@ -136,27 +174,7 @@ class robot:
         self.encoderA.RPMcalc()
         self.encoderB.RPMcalc()
 
-"""
-
-    def pulseScan(self):
-            a = self.near(self.proxSensA)
-            b = self.near(self.proxSensB)
-            c = self.near(self.proxSensC)
-            
-            if a ==False:
-                    self.direct("forward", 50)
-            else:
-                    if(b == False):
-                            if c:
-                                    self.direct("left", 50)
-                            else:
-                                    self.direct("right", 50)
-            
-    def cornerCheck(self):
-            if (self.near(self.proxSensA)):
-                    if (!self.near(self.proxSensB)):
-                            if (self.near(proxSensC)):
-                                    self.direct("left", 50)
-                            else:
-                                    if (
-"""
+if __name__== '__main__':
+    rob = Process(target = autonomous, args = ())
+    rob.start()
+    rob.join()

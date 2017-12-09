@@ -27,7 +27,21 @@ def piSetUp():
         rob = robot(motorL, motorR, encoderA, encoderB, proxSensA, proxSensB, proxSensC)
         rob.pinSetup()
         
+        tnow = time.time()
+        while(1):
+            rob.run()
+            TIC1.run()
         
+        #TIC1.start()
+        #rob.start()
+        #rob.join()
+        #TIC1.join()
+        #while(1):
+         #   newThread
+        #while(tnow + 60 > time.time() ):
+            
+        
+""" 
         rob.direct("forward", 50)
         tnow = time.time()
         while(tnow + 60 > time.time()):
@@ -44,7 +58,7 @@ def piSetUp():
             
                 
             rob.direct("forward", 50)
-            
+"""
 
 if __name__== "__main__" :
         from motor import motor
@@ -56,7 +70,8 @@ if __name__== "__main__" :
         import pygame
         import sys
         import RPi.GPIO as GPIO
-        #from thread import start_new_thread
+        from thread import start_new_thread
+        #from multiprocessing import Process
 	try:
             piSetUp()
         except KeyboardInterrupt:

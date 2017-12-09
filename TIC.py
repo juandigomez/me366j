@@ -7,9 +7,14 @@ import sys
 import math
 import numpy as np
 import time
+#import threading
+from multiprocessing import Process
 
-class TIC:
+class TIC ():
     
+    #def __init__(self):
+     #   threading.Thread.__init__(self)
+        
     def TICstart(self):
         #low range of the sensor (this will be blue on the screen)
         self.MINTEMP = 23
@@ -65,19 +70,28 @@ class TIC:
     
     def cam(self):
                     #read the pixels
-            pixels = self.sensor.readPixels()
-            pixels = [self.map(p, self.MINTEMP, self.MAXTEMP, 0, self.COLORDEPTH - 1) for p in pixels]
-            
-            #perdorm interpolation
-            bicubic = griddata(self.points, pixels, (self.grid_x, self.grid_y), method='cubic')
-            
-            #draw everything
-            for ix, row in enumerate(bicubic):
-                    for jx, pixel in enumerate(row):
-                            pygame.draw.rect(self.lcd, self.colors[self.constrain(int(pixel), 0, self.COLORDEPTH- 1)], (self.displayPixelHeight * ix, self.displayPixelWidth * jx, self.displayPixelHeight, self.displayPixelWidth))
-            for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			sys.exit()
-            pygame.display.update()
+        #while(1):
+                pixels = self.sensor.readPixels()
+                pixels = [self.map(p, self.MINTEMP, self.MAXTEMP, 0, self.COLORDEPTH - 1) for p in pixels]
+                
+                #perdorm interpolation
+                bicubic = griddata(self.points, pixels, (self.grid_x, self.grid_y), method='cubic')
+                
+                #draw everything
+                for ix, row in enumerate(bicubic):
+                        for jx, pixel in enumerate(row):
+                                pygame.draw.rect(self.lcd, self.colors[self.constrain(int(pixel), 0, self.COLORDEPTH- 1)], (self.displayPixelHeight * ix, self.displayPixelWidth * jx, self.displayPixelHeight, self.displayPixelWidth))
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                            sys.exit()
+                pygame.display.update()
+    
+    def run(self):
+        #threadLock.acquire()
+        self.cam()
+        #threadLock.release()
 
-
+if __name__ == '__main__':
+    tic = Process(target = cam, args =() )
+    tic.start()
+    tic.join()
