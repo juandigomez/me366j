@@ -2,13 +2,11 @@ from motor import motor
 from encoder import encoder
 from proximity import psensor
 import time
-#import threading
 from multiprocessing import Process
 
 class robot:
     
     def __init__(self, motorA, motorB, encoderA, encoderB, proxSensA, proxSensB, proxSensC):
-        #threading.Thread.__init__(self)
         self.motorA = motorA
         self.motorB = motorB
         self.encoderA = encoderA
@@ -68,16 +66,6 @@ class robot:
             self.motorA.setSpeed(RPM)
             self.motorA.setSpeed(-RPM)
             self.turn(direction, RPM)
-            """if self.frontCheck == False:
-                    self.frontCheck = True
-                    self.tRef = time.time()
-            if (self.tRef + 0.75 > time.time()):
-                    self.motorA.setSpeed(RPM)
-                    self.motorB.setSpeed(-RPM)                    
-            else:
-                    self.direct("stop" , 0)
-                    self.frontCheck = False
-            """
         elif direction == "left":
             self.motorA.setSpeed(RPM)
             self.motorB.setSpeed(RPM)
@@ -129,15 +117,7 @@ class robot:
         if(self.near()):
             if self.distanceA < self.proxSensA.threshold:
                 self.direct("backward", 50)
-                """if self.frontCheck == False:
-                    self.frontCheck = True
-                    self.tRef = time.time()
-                if (self.tRef + 0.75 > time.time()):
-                    self.direct("backward", 50)
-                else:
-                    self.direct("stop" , 0)
-                    self.frontCheck = False
-                """
+
             if (self.lastDir == "left"):
                 if self.dirCount < 2 :
                     self.direct("left", 50)

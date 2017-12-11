@@ -28,37 +28,12 @@ def piSetUp():
         rob.pinSetup()
         
         tnow = time.time()
+        rob.obsDetect()
+
         while(1):
             rob.run()
             TIC1.run()
-        
-        #TIC1.start()
-        #rob.start()
-        #rob.join()
-        #TIC1.join()
-        #while(1):
-         #   newThread
-        #while(tnow + 60 > time.time() ):
-            
-        
-""" 
-        rob.direct("forward", 50)
-        tnow = time.time()
-        while(tnow + 60 > time.time()):
-            dirstate = rob.lastDir
-            countstate = rob.dirCount
-            rob.checkNear()
-            if (dirstate != rob.lastDir or countstate != rob.dirCount):
-                ctime = time.time()
-                while(ctime > time.time() + 1):
-                    rob.checkNear()
-                    rob.direct("forward", 50)
-                rob.direct(rob.lastDir, 50)
-                rob.dirCount = 2
-            
-                
-            rob.direct("forward", 50)
-"""
+
 
 if __name__== "__main__" :
         from motor import motor
@@ -71,7 +46,6 @@ if __name__== "__main__" :
         import sys
         import RPi.GPIO as GPIO
         from thread import start_new_thread
-        #from multiprocessing import Process
 	try:
             piSetUp()
         except KeyboardInterrupt:
