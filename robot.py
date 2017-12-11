@@ -34,6 +34,17 @@ class robot:
     def run(self):
         self.autonomous()
     
+    def straightRun(self):
+	pulses = 10000/(self.diam*3.141592)*180
+	if abs(self.encoderA.count) < pulses:
+		self.encoderA.RPMcalc()
+	else:
+		self.encoderA.setSpeed(0)
+	if abs(self.encoderB.count) < pulses:
+		self.encoderB.RPMcalc()
+	else:
+		self.encoderB.setSpeed(0)
+	
     def autonomous(self):
         #while(1):
             dirstate = self.lastDir
@@ -48,7 +59,7 @@ class robot:
         
         
             self.direct("forward", 50)
-       
+	
     def direct(self, direction, RPM):
         if direction == "forward" :
             self.motorA.setSpeed(-RPM)
